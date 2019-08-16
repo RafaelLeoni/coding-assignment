@@ -20,11 +20,10 @@ public class EventManager {
 	
 	public void handle(List<Event> events) {
 		db.open();
-		//events.forEach(db::save);
+		events.forEach(db::save);
 		
 		Set<String> ids = events.stream().map(e -> e.getId()).collect(Collectors.toSet());
 		
-		//List<EventLog> logs = new ArrayList<>(ids.size());
 		ids.forEach(id -> {
 			Map<String, Object> params = new HashMap<>();
 			params.put("id", id);
