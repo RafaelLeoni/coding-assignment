@@ -31,10 +31,10 @@ dependencies {
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
-    testCompile 'org.hsqldb:hsqldb:2.4.1'
     
     implementation 'ch.qos.logback:logback-classic:1.1.7'
     
+    compile 'org.hsqldb:hsqldb:2.4.1'
     compile 'com.fasterxml.jackson.core:jackson-databind:2.0.1'
     compile 'org.hibernate:hibernate-gradle-plugin:5.4.0.Final'
     

@@ -1,6 +1,16 @@
-package com.rafaelleoni;
+package com.rafaelleoni.database;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
 public class EventLog {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int uuid;
 	
 	private String id;
     private int duration;

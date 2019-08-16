@@ -1,71 +1,67 @@
 package com.rafaelleoni.database;
 
 import java.util.List;
+import java.util.Map;
 
-import javax.persistence.EntityTransaction;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Configuration;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
 public class Database {
 	
-	private SessionFactory factory;
-	private Session session;
+	private EntityManagerFactory factory;
+	private EntityManager manager;
 	
 	public Database() {
-		Configuration configuration = new Configuration().configure();
-		StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder().
-		         applySettings(configuration.getProperties());
-		factory = configuration.buildSessionFactory(builder.build());
-		session = factory.openSession();
+		factory = Persistence.createEntityManagerFactory("coding-assignment");
+		manager = factory.createEntityManager();
 	}
 	
-	public void close() {
-		session.close();
+	public void open() {
+		manager.getTransaction().begin();
+	}
+	
+	public void commit() {
+		manager.flush();
+		manager.getTransaction().commit();
+		manager.clear();
+		manager.close();
 		factory.close();
 	}
 	
 	public <T> List<T> findAll(Class<T> type) {
-		CriteriaBuilder builder = session.getCriteriaBuilder();
-		CriteriaQuery<T> query = builder.createQuery(type);
-		return session.createQuery(query).getResultList();
+		TypedQuery<T> query = manager
+				.createQuery(String.format("from %s", type.getSimpleName()), type);
+		return query.getResultList();
 	}
 	
 	public <T,I> T findById(I id, Class<T> type) {
-		return session.find(type, id);
+		return manager.find(type, id);
 	}
 	
 	public <T> T save(T entity) {
-		EntityTransaction tx = session.getTransaction();
-		tx.begin();
-		session.persist(entity);
-		session.flush();
-		tx.commit();
+		manager.persist(entity);
 		return entity;
 	}
 	
 	public <T> T update(T entity) {
-		EntityTransaction tx = session.getTransaction();
-		tx.begin();
-		session.merge(entity);
-		session.flush();
-		tx.commit();
+		manager.merge(entity);
 		return entity;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public <T, I> void delete(I id, Class<T> type) {
 		T entity = findById(id, type);
-		EntityTransaction tx = session.getTransaction();
-		tx.begin();
-		T mergedEntity = (T) session.merge(entity);
-		session.remove(mergedEntity);
-		session.flush();
-		tx.commit();
+		T mergedEntity = (T) manager.merge(entity);
+		manager.remove(mergedEntity);
+	}
+	
+	public <T> List<T> query(String query, Class<T> type, Map<String, Object> params) {
+		TypedQuery<T> typedQuery = manager.createQuery(query, type);
+		params.forEach((key, value) -> {
+			typedQuery.setParameter(key, value);
+		});
+		return typedQuery.getResultList();
 	}
 	
 }

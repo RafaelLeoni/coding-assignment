@@ -2,7 +2,7 @@ CREATE TABLE event (
         uuid IDENTITY PRIMARY KEY,
         id VARCHAR(50),
         state VARCHAR(50),
-        timestamp INT,
+        timestamp BIGINT,
         type VARCHAR(50),
         host VARCHAR(50)
 );

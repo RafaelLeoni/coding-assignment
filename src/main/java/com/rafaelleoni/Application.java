@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rafaelleoni.database.Event;
 import com.rafaelleoni.file.FileHandler;
 import com.rafaelleoni.manager.EventManager;
 
@@ -30,14 +31,14 @@ public class Application {
 			String result = fileHandler.read();
 			
 			//Converting file string to list of Log object
-			List<Event> logs = new ArrayList<>();
+			List<Event> events = new ArrayList<>();
 			for (String line : result.split(System.lineSeparator())) {
-				logs.add(new ObjectMapper().readValue(line, Event.class));
+				events.add(new ObjectMapper().readValue(line, Event.class));
 			}
 			
-			LOGGER.info("Saving events into database. Number of records: " + logs.size());
+			LOGGER.info("Saving events into database. Number of records: " + events.size());
 			EventManager manager = new EventManager();
-			manager.handle(logs);
+			manager.handle(events);
 			
 		} catch (IOException e) {
 			LOGGER.error(e.getMessage());
