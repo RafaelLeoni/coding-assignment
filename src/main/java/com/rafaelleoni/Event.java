@@ -1,6 +1,6 @@
 package com.rafaelleoni;
 
-public class LogObject {
+public class Event {
 	
 	private String id;
 	private String state;
